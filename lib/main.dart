@@ -14,6 +14,7 @@ import 'package:ecommerce_own_user_app/pages/order_successful_page.dart';
 import 'package:ecommerce_own_user_app/pages/product_details_page.dart';
 import 'package:ecommerce_own_user_app/pages/product_list_page.dart';
 import 'package:ecommerce_own_user_app/pages/product_search_page.dart';
+import 'package:ecommerce_own_user_app/pages/sslcommerz_page.dart';
 import 'package:ecommerce_own_user_app/pages/user_order_list_page.dart';
 import 'package:ecommerce_own_user_app/pages/user_profile_page.dart';
 import 'package:ecommerce_own_user_app/pages/user_profile_update.dart';
@@ -85,6 +86,7 @@ class MyApp extends StatelessWidget {
                   DistributorSearchPage(),
               DistributorProductDetailsPage.routeName: (context) =>
                   DistributorProductDetailsPage(),
+              SSLCommerzPage.routeName: (context) => SSLCommerzPage(),
             },
           );
         });

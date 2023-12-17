@@ -54,6 +54,7 @@ dependencies:
   cached_network_image:
   flutter_spinkit:
   fluttertoast:
+  dots_indicator:
 dev_dependencies:
   flutter_test:
     sdk: flutter

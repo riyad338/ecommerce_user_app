@@ -1,6 +1,5 @@
 const String emptyFieldErrMsg = 'This field must not be empty';
 const String takaSymbol = '৳';
-const String photoDirectory = 'PBFlutter05';
 const negativePriceErrMsg = 'Price shouldn\'t be less than 0';
 const negativeStockErrMsg = 'Quantity should be greater than 0';
 

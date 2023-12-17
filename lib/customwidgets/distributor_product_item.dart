@@ -59,26 +59,26 @@ class _DistributorProductItemState extends State<DistributorProductItem> {
                       ),
                       errorWidget: (context, url, error) => Icon(Icons.error),
                     ),
-                    Positioned(
-                      child: Container(
-                        width: 60,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                              bottomRight: Radius.circular(40)),
-                          color: Colors.grey,
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.only(left: 6.0, top: 5),
-                          child: FittedBox(
-                            child: Text(
-                              "${widget.product.offer}",
-                              style: TextStyle(),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    // Positioned(
+                    //   child: Container(
+                    //     width: 60,
+                    //     height: 80,
+                    //     decoration: BoxDecoration(
+                    //       borderRadius: BorderRadius.only(
+                    //           bottomRight: Radius.circular(40)),
+                    //       color: Colors.grey,
+                    //     ),
+                    //     child: Padding(
+                    //       padding: EdgeInsets.only(left: 6.0, top: 5),
+                    //       child: FittedBox(
+                    //         child: Text(
+                    //           "${widget.product.offer}",
+                    //           style: TextStyle(),
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

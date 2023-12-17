@@ -74,25 +74,46 @@ class _ProductItemState extends State<ProductItem> {
                       // ),
                     ),
                   ),
-            Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Text(
-                widget.product.name!,
-                style: TextStyle(fontSize: 16.sp, color: Colors.black),
+            FittedBox(
+              fit: BoxFit.contain,
+              child: Row(
+                children: [
+                  Text(
+                    widget.product.name!,
+                    style: TextStyle(fontSize: 16.sp, color: Colors.black),
+                  ),
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 7)),
+                  Text(
+                    '$takaSymbol${widget.product.price}',
+                    style: TextStyle(
+                        fontSize: 19.sp,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Text(
-                '$takaSymbol${widget.product.price}',
-                style: TextStyle(fontSize: 20.sp, color: Colors.black),
-              ),
-            ),
+
+            // Padding(
+            //   padding: const EdgeInsets.all(4.0),
+            //   child: Text(
+            //     widget.product.name!,
+            //     style: TextStyle(fontSize: 16.sp, color: Colors.black),
+            //   ),
+            // ),
+            // Padding(
+            //   padding: const EdgeInsets.all(4.0),
+            //   child: Text(
+            //     '$takaSymbol${widget.product.price}',
+            //     style: TextStyle(fontSize: 20.sp, color: Colors.black),
+            //   ),
+            // ),
             Text(
               textAlign: TextAlign.center,
               "${widget.product.offer!}",
               style: TextStyle(
-                  backgroundColor: Colors.amberAccent,
+                  color: Colors.redAccent.shade100,
+                  // backgroundColor: Colors.amberAccent,
                   fontSize: 13.sp,
                   fontWeight: FontWeight.bold),
             ),

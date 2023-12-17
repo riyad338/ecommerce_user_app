@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce_own_user_app/pages/product_list_page.dart';
+import 'package:ecommerce_own_user_app/pages/sslcommerz_page.dart';
 import 'package:ecommerce_own_user_app/providers/user_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -327,7 +328,19 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   child: const Text('PLACE ORDER'),
                   onPressed: () {
                     if (formkey.currentState!.validate()) {
-                      _showDialog(context);
+                      if (radioGroupValue == Payment.online) {
+                        Navigator.pushNamed(context, SSLCommerzPage.routeName,
+                            arguments: [
+                              double.parse(
+                                  '${_orderProvider.getGrandTotal(_cartProvider.cartItemsTotalPrice)}'),
+                              _nameController.text,
+                              _addressController.text,
+                              AuthService.currentUser!.uid,
+                              _phoneController.text,
+                            ]);
+                      } else {
+                        _showDialog(context);
+                      }
                     }
                   }),
             )
@@ -432,155 +445,5 @@ class _CheckoutPageState extends State<CheckoutPage> {
         );
       },
     );
-  }
-
-  Future<void> sslCommerzCustomizedCall() async {
-    Sslcommerz sslcommerz = Sslcommerz(
-      initializer: SSLCommerzInitialization(
-        //Use the ipn if you have valid one, or it will fail the transaction.
-        //   ipn_url: "www.ipnurl.com",
-        multi_card_name: _nameController.text,
-        currency: SSLCurrencyType.BDT,
-        product_category: "Food",
-        sdkType: SSLCSdkType.LIVE,
-        store_id: _userProvider.userModel!.userId,
-        store_passwd: _userProvider.userModel!.userId,
-        total_amount: double.parse(
-            "${_orderProvider.getGrandTotal(_cartProvider.cartItemsTotalPrice)}"),
-        tran_id: "1231321321321312",
-      ),
-    );
-
-    sslcommerz
-        .addEMITransactionInitializer(
-            sslcemiTransactionInitializer: SSLCEMITransactionInitializer(
-                emi_options: 1, emi_max_list_options: 9, emi_selected_inst: 0))
-        .addShipmentInfoInitializer(
-            sslcShipmentInfoInitializer: SSLCShipmentInfoInitializer(
-                shipmentMethod: "yes",
-                numOfItems: 5,
-                shipmentDetails: ShipmentDetails(
-                    shipAddress1: _addressController.text,
-                    shipCity: _addressController.text,
-                    shipCountry: "Bangladesh",
-                    shipName: _nameController.text,
-                    shipPostCode: "7860")))
-        .addCustomerInfoInitializer(
-          customerInfoInitializer: SSLCCustomerInfoInitializer(
-            customerState: "Chattogram",
-            customerName: _nameController.text,
-            customerEmail: _userProvider.userModel!.email,
-            customerAddress1: "Anderkilla",
-            customerCity: _addressController.text,
-            customerPostCode: "200",
-            customerCountry: "Bangladesh",
-            customerPhone: _phoneController.text,
-          ),
-        )
-        .addProductInitializer(
-            sslcProductInitializer:
-                // ***** ssl product initializer for general product STARTS*****
-                SSLCProductInitializer(
-          productName: "Water Filter",
-          productCategory: "Widgets",
-          general: General(
-            general: "General Purpose",
-            productProfile: "Product Profile",
-          ),
-        ))
-        .addAdditionalInitializer(
-          sslcAdditionalInitializer: SSLCAdditionalInitializer(
-            valueA: "value a ",
-            valueB: "value b",
-            valueC: "value c",
-            valueD: "value d",
-          ),
-        );
-
-    try {
-      SSLCTransactionInfoModel result = await sslcommerz.payNow();
-
-      if (result.status!.toLowerCase() == "failed") {
-        Fluttertoast.showToast(
-            msg: "Transaction is Failed....",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-            fontSize: 16.0);
-      } else {
-        Fluttertoast.showToast(
-          msg: "Transaction is ${result.status} and Amount is ${result.amount}",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-      }
-    } catch (e) {
-      debugPrint(e.toString());
-    }
-  }
-
-  Future<void> sslCommerzGeneralCall() async {
-    Sslcommerz sslcommerz = Sslcommerz(
-      initializer: SSLCommerzInitialization(
-        //Use the ipn if you have valid one, or it will fail the transaction.
-        //  ipn_url: "www.ipnurl.com",
-        multi_card_name: 'multicard',
-        currency: SSLCurrencyType.BDT,
-        product_category: "Food",
-
-        //type
-        sdkType: radioGroupValue == Payment.online
-            ? SSLCSdkType.LIVE
-            : SSLCSdkType.TESTBOX,
-        store_id: 'store_id',
-        store_passwd: 'store_password',
-        total_amount: double.parse(
-            "${_orderProvider.getGrandTotal(_cartProvider.cartItemsTotalPrice)}"),
-        tran_id: "01863791209",
-      ),
-    );
-    try {
-      SSLCTransactionInfoModel result = await sslcommerz.payNow();
-
-      if (result.status!.toLowerCase() == "failed") {
-        Fluttertoast.showToast(
-          msg: "Transaction is Failed....",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-      } else if (result.status!.toLowerCase() == "closed") {
-        Fluttertoast.showToast(
-          msg: "SDK Closed by User",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-      } else {
-        Fluttertoast.showToast(
-            msg:
-                "Transaction is ${result.status} and Amount is ${result.amount}",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
-      }
-    } catch (e) {
-      debugPrint(e.toString());
-    }
   }
 }

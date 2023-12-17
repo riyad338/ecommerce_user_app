@@ -10,7 +10,7 @@ class ProductProvider extends ChangeNotifier {
   List<ProductModel> productList = [];
   List<ProductModel> distributorProductList = [];
   List<String> categoryList = [];
-
+  List<String> carouselSliderimg = [];
   void getAllProducts() {
     DBHelper.fetchAllProducts().listen((event) {
       productList = List.generate(event.docs.length,
@@ -49,6 +49,14 @@ class ProductProvider extends ChangeNotifier {
     DBHelper.fetchAllCategories().listen((event) {
       categoryList = List.generate(
           event.docs.length, (index) => event.docs[index].data()['name']);
+      notifyListeners();
+    });
+  }
+
+  void getCarouselSliderImage() {
+    DBHelper.fetchAllProducts().listen((snapshot) {
+      carouselSliderimg = List.generate(snapshot.docs.length,
+          (index) => snapshot.docs[index].data()['imageDownloadUrl']);
       notifyListeners();
     });
   }
