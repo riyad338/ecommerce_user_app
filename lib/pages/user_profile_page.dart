@@ -1,5 +1,6 @@
 import 'package:ecommerce_own_user_app/auth/auth_service.dart';
 import 'package:ecommerce_own_user_app/pages/user_profile_update.dart';
+import 'package:ecommerce_own_user_app/providers/theme_provider.dart';
 import 'package:ecommerce_own_user_app/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -39,9 +40,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
     super.didChangeDependencies();
   }
 
-
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.greenAccent,
@@ -79,7 +80,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   ),
                   ListTile(
                     leading: Icon(Icons.person),
-                    tileColor: Colors.greenAccent.shade100,
+                    tileColor: themeProvider.themeModeType == ThemeModeType.Dark
+                        ? Colors.grey
+                        : Colors.greenAccent.shade100,
                     title: Text(userName == null ? "" : userName.toString()!),
                   ),
                   SizedBox(
@@ -87,7 +90,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   ),
                   ListTile(
                     leading: Icon(Icons.email),
-                    tileColor: Colors.greenAccent.shade100,
+                    tileColor: themeProvider.themeModeType == ThemeModeType.Dark
+                        ? Colors.grey
+                        : Colors.greenAccent.shade100,
                     title: Text(userEmail == null ? "" : userEmail!),
                   ),
                   SizedBox(
@@ -95,7 +100,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   ),
                   ListTile(
                     leading: Icon(Icons.call),
-                    tileColor: Colors.greenAccent.shade100,
+                    tileColor: themeProvider.themeModeType == ThemeModeType.Dark
+                        ? Colors.grey
+                        : Colors.greenAccent.shade100,
                     title: Text(userPhone == null ? "" : userPhone!),
                   ),
                   SizedBox(
@@ -103,7 +110,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   ),
                   ListTile(
                     leading: Icon(Icons.home),
-                    tileColor: Colors.greenAccent.shade100,
+                    tileColor: themeProvider.themeModeType == ThemeModeType.Dark
+                        ? Colors.grey
+                        : Colors.greenAccent.shade100,
                     title: Text(userAddress != null ? userAddress! : ""),
                   ),
                 ],

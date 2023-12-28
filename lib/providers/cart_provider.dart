@@ -9,29 +9,95 @@ import '../models/product_model.dart';
 class CartProvider with ChangeNotifier {
   List<CartModel> cartList = [];
   List<DistributorCartModel> distributorcartList = [];
-  void addToCart(ProductModel productModel) {
-    final cartModel = CartModel(
-        productId: productModel.id!,
-        productName: productModel.name!,
-        price: productModel.price!);
-    DBHelper.addToCart(AuthService.currentUser!.uid, cartModel);
-  }
+  bool _isLoading = false;
+  bool _isLoadingaddcart = false;
 
-  void removeFromCart(String id) {
-    DBHelper.removeFromCart(AuthService.currentUser!.uid, id);
-  }
-
-  void increaseQty(CartModel cartModel) {
-    cartModel.qty += 1;
-    DBHelper.updateCartQuantity(AuthService.currentUser!.uid, cartModel);
-  }
-
-  void decreaseQty(CartModel cartModel) {
-    if (cartModel.qty > 1) {
-      cartModel.qty -= 1;
-      DBHelper.updateCartQuantity(AuthService.currentUser!.uid, cartModel);
+  bool get isLoading => _isLoading;
+  bool get isLoadingaddcart => _isLoadingaddcart;
+  void addToCart(ProductModel productModel) async {
+    try {
+      _isLoadingaddcart = true; // Set loading state to true
+      notifyListeners();
+      final cartModel = CartModel(
+          productId: productModel.id!,
+          productName: productModel.name!,
+          imageDownloadUrl: productModel.imageDownloadUrl,
+          price: productModel.price!);
+      await DBHelper.addToCart(AuthService.currentUser!.uid, cartModel);
+      _isLoadingaddcart = false; // Set loading state to false
+      notifyListeners();
+    } catch (error) {
+      _isLoadingaddcart =
+          false; // Set loading state to false in case of an error
+      notifyListeners();
+      // Handle the error as needed
     }
   }
+
+  void removeFromCart(String id) async {
+    try {
+      _isLoadingaddcart = true; // Set loading state to true
+      notifyListeners();
+      await DBHelper.removeFromCart(AuthService.currentUser!.uid, id);
+      _isLoadingaddcart = false; // Set loading state to false
+      notifyListeners();
+    } catch (error) {
+      _isLoadingaddcart =
+          false; // Set loading state to false in case of an error
+      notifyListeners();
+      // Handle the error as needed
+    }
+  }
+
+  void increaseQty(CartModel cartModel) async {
+    try {
+      _isLoading = true; // Set loading state to true
+      notifyListeners();
+
+      cartModel.qty += 1;
+      await DBHelper.updateCartQuantity(
+          AuthService.currentUser!.uid, cartModel);
+
+      _isLoading = false; // Set loading state to false
+      notifyListeners();
+    } catch (error) {
+      _isLoading = false; // Set loading state to false in case of an error
+      notifyListeners();
+      // Handle the error as needed
+    }
+  }
+
+  void decreaseQty(CartModel cartModel) async {
+    try {
+      _isLoading = true; // Set loading state to true
+      notifyListeners();
+
+      if (cartModel.qty > 1) {
+        cartModel.qty -= 1;
+        await DBHelper.updateCartQuantity(
+            AuthService.currentUser!.uid, cartModel);
+      }
+
+      _isLoading = false; // Set loading state to false
+      notifyListeners();
+    } catch (error) {
+      _isLoading = false; // Set loading state to false in case of an error
+      notifyListeners();
+      // Handle the error as needed
+    }
+  }
+
+  // void increaseQty(CartModel cartModel) {
+  //   cartModel.qty += 1;
+  //   DBHelper.updateCartQuantity(AuthService.currentUser!.uid, cartModel);
+  // }
+  //
+  // void decreaseQty(CartModel cartModel) {
+  //   if (cartModel.qty > 1) {
+  //     cartModel.qty -= 1;
+  //     DBHelper.updateCartQuantity(AuthService.currentUser!.uid, cartModel);
+  //   }
+  // }
 
   void clearCart() {
     DBHelper.removeAllItemsFromCart(AuthService.currentUser!.uid, cartList);

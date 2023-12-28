@@ -1,9 +1,14 @@
+import 'package:ecommerce_own_user_app/db/db_helper.dart';
 import 'package:ecommerce_own_user_app/pages/email_verification_page.dart';
+import 'package:ecommerce_own_user_app/pages/phone_number_login_page.dart';
+import 'package:ecommerce_own_user_app/pages/product_list_page.dart';
+import 'package:ecommerce_own_user_app/providers/theme_provider.dart';
 import 'package:ecommerce_own_user_app/utils/helper_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import '../auth/auth_service.dart';
 import '../models/user_model.dart';
@@ -36,7 +41,32 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: themeProvider.themeModeType == ThemeModeType.Dark
+            ? Colors.black12
+            : Colors.white70,
+        elevation: 0,
+        actions: [
+          Icon(
+            Icons.dark_mode,
+            color: themeProvider.themeModeType == ThemeModeType.Dark
+                ? Colors.white
+                : Colors.black,
+          ),
+          Switch(
+            activeColor: Colors.white,
+            inactiveThumbColor: Colors.black,
+            value: themeProvider.themeModeType == ThemeModeType.Dark,
+            onChanged: (value) {
+              setState(() {
+                themeProvider.toggleTheme();
+              });
+            },
+          ),
+        ],
+      ),
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(image: AssetImage(""), fit: BoxFit.fill),
@@ -155,6 +185,107 @@ class _LoginPageState extends State<LoginPage> {
                     _errMsg,
                     style: TextStyle(color: Colors.red),
                   ),
+                  Container(
+                    width: double.infinity,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            height: 1.h,
+                            color: Colors.grey,
+                            margin: EdgeInsets.symmetric(horizontal: 12.w),
+                          ),
+                        ),
+                        Text(
+                          "OR",
+                          style: TextStyle(
+                              fontSize: 16.sp,
+                              color: themeProvider.themeModeType ==
+                                      ThemeModeType.Dark
+                                  ? Colors.white
+                                  : Colors.black),
+                        ),
+                        Expanded(
+                          child: Container(
+                            height: 1.h,
+                            color: Colors.grey,
+                            margin: EdgeInsets.symmetric(horizontal: 12.w),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, PhoneAuthPage.routeName);
+                    },
+                    child: Container(
+                      height: 50.h,
+                      decoration: BoxDecoration(
+                          color: Colors.brown,
+                          borderRadius: BorderRadius.circular(25.r)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          CircleAvatar(
+                              backgroundColor: Colors.white70,
+                              radius: 25.r,
+                              child: Icon(
+                                Icons.call,
+                                color: Colors.green,
+                              )),
+                          SizedBox(
+                            width: 30.w,
+                          ),
+                          Text(
+                            "Continue with Phone",
+                            style: TextStyle(
+                                fontSize: 16.sp, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  InkWell(
+                    onTap: () async {
+                      await _handleSignIn();
+                    },
+                    child: Container(
+                      height: 50.h,
+                      decoration: BoxDecoration(
+                          color: Colors.brown,
+                          borderRadius: BorderRadius.circular(25.r)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          CircleAvatar(
+                              backgroundColor: Colors.white70,
+                              radius: 25.r,
+                              child: Image.asset(
+                                "images/goo.png",
+                                height: 30.h,
+                              )),
+                          SizedBox(
+                            width: 30.w,
+                          ),
+                          Text(
+                            "Continue with Google",
+                            style: TextStyle(
+                                fontSize: 16.sp, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
                 ],
               ),
             ],
@@ -242,5 +373,53 @@ class _LoginPageState extends State<LoginPage> {
         );
       },
     );
+  }
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  GoogleSignIn googleSignInf = GoogleSignIn();
+  Future<void> _handleSignIn() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignInf.signIn();
+
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleAuth =
+            await googleSignInAccount.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+
+        final UserCredential authResult =
+            await _auth.signInWithCredential(credential);
+        final User? user = authResult.user;
+
+        if (user != null) {
+          bool isFirstTimeSignIn = await DBHelper.isUserExists(user.uid);
+
+          if (!isFirstTimeSignIn) {
+            // Add the user's data to the database using UserModel.
+            UserModel userModel = UserModel(
+              userId: user.uid,
+              name: user.displayName,
+              email: user.email!,
+              userCreationTime:
+                  user.metadata.creationTime!.millisecondsSinceEpoch,
+            );
+
+            // Save user data in your user collection
+            Provider.of<UserProvider>(context, listen: false)
+                .addUser(userModel);
+            Navigator.pushReplacementNamed(context, ProductListPage.routeName);
+          }
+
+          // Proceed to the main screen or any other screen.
+          AuthService.roleBaseLogin(context);
+          showToastMsg("Login Successfully");
+        }
+      }
+    } catch (e) {
+      print("Error during Google Sign-In: $e");
+    }
   }
 }

@@ -223,4 +223,9 @@ class DBHelper {
   static Stream<DocumentSnapshot<Map<String, dynamic>>> fetchAllUserinfo(
           String userId) =>
       _db.collection(_collectionUser).doc(userId).snapshots();
+  static Future<bool> isUserExists(String userId) async {
+    final userSnapshot =
+        await _db.collection(_collectionUser).doc(userId).get();
+    return userSnapshot.exists;
+  }
 }

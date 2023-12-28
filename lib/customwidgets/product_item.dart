@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecommerce_own_user_app/pages/product_details_page.dart';
+import 'package:ecommerce_own_user_app/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -28,7 +29,7 @@ class _ProductItemState extends State<ProductItem> {
   @override
   Widget build(BuildContext context) {
     final cart = _cartProvider.isInCart(widget.product.id!);
-
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return InkWell(
       onTap: () => Navigator.pushNamed(context, ProductDetailsPage.routeName,
           arguments: [
@@ -80,14 +81,21 @@ class _ProductItemState extends State<ProductItem> {
                 children: [
                   Text(
                     widget.product.name!,
-                    style: TextStyle(fontSize: 16.sp, color: Colors.black),
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      color: themeProvider.themeModeType == ThemeModeType.Dark
+                          ? Colors.white
+                          : Colors.black,
+                    ),
                   ),
                   Padding(padding: EdgeInsets.symmetric(horizontal: 7)),
                   Text(
                     '$takaSymbol${widget.product.price}',
                     style: TextStyle(
                         fontSize: 19.sp,
-                        color: Colors.black,
+                        color: themeProvider.themeModeType == ThemeModeType.Dark
+                            ? Colors.white
+                            : Colors.black,
                         fontWeight: FontWeight.bold),
                   ),
                 ],

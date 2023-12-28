@@ -5,6 +5,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:ecommerce_own_user_app/auth/auth_service.dart';
 import 'package:ecommerce_own_user_app/models/user_model.dart';
 import 'package:ecommerce_own_user_app/pages/user_profile_update.dart';
+import 'package:ecommerce_own_user_app/providers/theme_provider.dart';
 import 'package:ecommerce_own_user_app/providers/user_provider.dart';
 import 'package:ecommerce_own_user_app/utils/helper_functions.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -44,7 +45,7 @@ class _UserProfileUpdatePage extends State<UserProfileUpdatePage> {
       _userProvider = Provider.of<UserProvider>(context);
       _userProvider.getCurrentUser(AuthService.currentUser!.uid).then((user) {
         if (user != null) {
-          _emailController.text = user.email;
+          _emailController.text = user.email!;
           _nameController.text = user.name!;
           _phoneController.text = user.phone!;
           _addreessController.text = user.deliveryAddress!;
@@ -68,6 +69,7 @@ class _UserProfileUpdatePage extends State<UserProfileUpdatePage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("Update Profile"),
@@ -140,13 +142,21 @@ class _UserProfileUpdatePage extends State<UserProfileUpdatePage> {
                       decoration: InputDecoration(
                         suffixIcon: Icon(Icons.edit),
                         prefixIcon: Icon(Icons.person),
-                        hintStyle: TextStyle(color: Colors.black12),
-                        hintText: "Name",
+                        hintStyle: TextStyle(
+                          color:
+                              themeProvider.themeModeType == ThemeModeType.Dark
+                                  ? Colors.grey.shade400
+                                  : Colors.black12,
+                        ),
+                        hintText: "Set Your Name",
                         border: OutlineInputBorder(
                             borderRadius:
                                 BorderRadius.all(Radius.circular(15.r))),
                         filled: true,
-                        fillColor: Colors.greenAccent.shade100,
+                        fillColor:
+                            themeProvider.themeModeType == ThemeModeType.Dark
+                                ? Colors.grey
+                                : Colors.greenAccent.shade100,
                       ),
                       controller: _nameController,
                     ),
@@ -158,13 +168,21 @@ class _UserProfileUpdatePage extends State<UserProfileUpdatePage> {
                         prefixIcon: Icon(Icons.email),
                         suffixIcon: Icon(Icons.lock),
                         enabled: false,
-                        hintStyle: TextStyle(color: Colors.black12),
+                        hintStyle: TextStyle(
+                          color:
+                              themeProvider.themeModeType == ThemeModeType.Dark
+                                  ? Colors.grey.shade400
+                                  : Colors.black12,
+                        ),
                         hintText: "Email",
                         border: OutlineInputBorder(
                             borderRadius:
                                 BorderRadius.all(Radius.circular(15.r))),
                         filled: true,
-                        fillColor: Colors.greenAccent.shade100,
+                        fillColor:
+                            themeProvider.themeModeType == ThemeModeType.Dark
+                                ? Colors.grey
+                                : Colors.greenAccent.shade100,
                       ),
                       controller: _emailController,
                     ),
@@ -175,13 +193,21 @@ class _UserProfileUpdatePage extends State<UserProfileUpdatePage> {
                       decoration: InputDecoration(
                         suffixIcon: Icon(Icons.edit),
                         prefixIcon: Icon(Icons.call),
-                        hintText: "Phone",
-                        hintStyle: TextStyle(color: Colors.black12),
+                        hintText: "Set Phone Number",
+                        hintStyle: TextStyle(
+                          color:
+                              themeProvider.themeModeType == ThemeModeType.Dark
+                                  ? Colors.grey.shade400
+                                  : Colors.black12,
+                        ),
                         border: OutlineInputBorder(
                             borderRadius:
                                 BorderRadius.all(Radius.circular(15.r))),
                         filled: true,
-                        fillColor: Colors.greenAccent.shade100,
+                        fillColor:
+                            themeProvider.themeModeType == ThemeModeType.Dark
+                                ? Colors.grey
+                                : Colors.greenAccent.shade100,
                       ),
                       controller: _phoneController,
                     ),
@@ -193,12 +219,20 @@ class _UserProfileUpdatePage extends State<UserProfileUpdatePage> {
                         suffixIcon: Icon(Icons.edit),
                         prefixIcon: Icon(Icons.home),
                         hintText: "Adreess",
-                        hintStyle: TextStyle(color: Colors.black12),
+                        hintStyle: TextStyle(
+                          color:
+                              themeProvider.themeModeType == ThemeModeType.Dark
+                                  ? Colors.grey.shade400
+                                  : Colors.black12,
+                        ),
                         border: OutlineInputBorder(
                             borderRadius:
                                 BorderRadius.all(Radius.circular(15.r))),
                         filled: true,
-                        fillColor: Colors.greenAccent.shade100,
+                        fillColor:
+                            themeProvider.themeModeType == ThemeModeType.Dark
+                                ? Colors.grey
+                                : Colors.greenAccent.shade100,
                       ),
                       controller: _addreessController,
                     )
@@ -216,8 +250,11 @@ class _UserProfileUpdatePage extends State<UserProfileUpdatePage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        final themeProvider = Provider.of<ThemeProvider>(context);
         return AlertDialog(
-          backgroundColor: Colors.white,
+          backgroundColor: themeProvider.themeModeType == ThemeModeType.Dark
+              ? Colors.grey
+              : Colors.white,
           elevation: 20,
           content: Text("Please select"),
           actions: [

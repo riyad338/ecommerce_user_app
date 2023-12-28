@@ -7,11 +7,13 @@ import 'package:ecommerce_own_user_app/customwidgets/product_item.dart';
 import 'package:ecommerce_own_user_app/pages/product_search_page.dart';
 import 'package:ecommerce_own_user_app/pages/user_profile_page.dart';
 import 'package:ecommerce_own_user_app/providers/cart_provider.dart';
+import 'package:ecommerce_own_user_app/providers/theme_provider.dart';
 import 'package:ecommerce_own_user_app/providers/user_provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
 import '../customwidgets/main_drawer.dart';
@@ -48,6 +50,7 @@ class _ProductListPageState extends State<ProductListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     cartListLength = _cartProvider.cartList.length;
     _userProvider = Provider.of<UserProvider>(context);
     _userProvider.getCurrentUser(AuthService.currentUser!.uid).then((user) {
@@ -66,11 +69,15 @@ class _ProductListPageState extends State<ProductListPage> {
               },
               icon: Icon(
                 Icons.menu,
-                color: Colors.black,
+                color: themeProvider.themeModeType == ThemeModeType.Dark
+                    ? Colors.white
+                    : Colors.black,
               )),
         ),
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: themeProvider.themeModeType == ThemeModeType.Dark
+            ? Colors.black26
+            : Colors.white,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -84,8 +91,11 @@ class _ProductListPageState extends State<ProductListPage> {
             ),
             Text(
               'Prime Cafe',
-              style:
-                  TextStyle(color: Colors.brown, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: themeProvider.themeModeType == ThemeModeType.Dark
+                      ? Colors.brown.shade100
+                      : Colors.brown,
+                  fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -113,7 +123,9 @@ class _ProductListPageState extends State<ProductListPage> {
                 },
                 child: Icon(
                   Icons.shopping_cart,
-                  color: Colors.black,
+                  color: themeProvider.themeModeType == ThemeModeType.Dark
+                      ? Colors.white
+                      : Colors.black,
                 ),
               ),
             ),
@@ -139,117 +151,127 @@ class _ProductListPageState extends State<ProductListPage> {
           ),
         ],
       ),
-      body: CustomScrollView(
-        shrinkWrap: true,
-        slivers: [
-          SliverAppBar(
-            floating: true,
-            automaticallyImplyLeading: false,
-            expandedHeight: 50.h,
-            backgroundColor: Colors.white,
-            title: InkWell(
-              onTap: () {
-                Navigator.pushNamed(context, SearchPage.routeName,
-                    arguments: [_productProvider.productList]);
-              },
-              child: Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.r)),
-                elevation: 20,
-                child: Container(
-                  height: 50.h,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      border: Border.all(color: Colors.greenAccent),
+      body: ModalProgressHUD(
+        inAsyncCall: _cartProvider.isLoadingaddcart,
+        opacity: 0.3,
+        progressIndicator: SpinKitWave(
+          color: Colors.greenAccent,
+        ),
+        child: CustomScrollView(
+          shrinkWrap: true,
+          slivers: [
+            SliverAppBar(
+              floating: true,
+              automaticallyImplyLeading: false,
+              expandedHeight: 50.h,
+              backgroundColor: themeProvider.themeModeType == ThemeModeType.Dark
+                  ? Colors.black26
+                  : Colors.white,
+              title: InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, SearchPage.routeName,
+                      arguments: [_productProvider.productList]);
+                },
+                child: Card(
+                  shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20.r)),
-                  child: Center(
-                      child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15.0),
-                    child: Row(
-                      children: [
-                        Icon(Icons.search),
-                        SizedBox(
-                          width: 10.w,
-                        ),
-                        Text("Search"),
-                      ],
-                    ),
-                  )),
+                  elevation: 20,
+                  child: Container(
+                    height: 50.h,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.greenAccent),
+                        borderRadius: BorderRadius.circular(20.r)),
+                    child: Center(
+                        child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 15.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.search),
+                          SizedBox(
+                            width: 10.w,
+                          ),
+                          Text("Search"),
+                        ],
+                      ),
+                    )),
+                  ),
                 ),
               ),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.w),
-              child: Column(
-                children: [
-                  Container(
-                    height: 150.h,
-                    width: 400.w,
-                    child: CarouselSlider(
-                        items: _productProvider.carouselSliderimg
-                            .map((item) => Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20.r),
-                                  ),
-                                  width: 200.w,
-                                  height: 200.h,
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 10.w),
-                                  child: ClipRRect(
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                child: Column(
+                  children: [
+                    Container(
+                      height: 150.h,
+                      width: 400.w,
+                      child: CarouselSlider(
+                          items: _productProvider.carouselSliderimg
+                              .map((item) => Container(
+                                    decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(20.r),
-                                      child: CachedNetworkImage(
-                                        imageUrl: item,
-                                        fit: BoxFit.cover,
-                                        placeholder: (context, url) =>
-                                            SpinKitFadingCircle(
-                                          color: Colors.greenAccent,
-                                        ),
-                                        errorWidget: (context, url, error) =>
-                                            Icon(Icons.error),
-                                      )),
-                                ))
-                            .toList(),
-                        options: CarouselOptions(
-                            autoPlay: true,
-                            enlargeCenterPage: true,
-                            viewportFraction: 1,
-                            enlargeStrategy: CenterPageEnlargeStrategy.height,
-                            onPageChanged: (val, carouselPageChangedReason) {
-                              setState(() {
-                                _dotPosition = val;
-                              });
-                            })),
-                  ),
-                  DotsIndicator(
-                    dotsCount: _productProvider.carouselSliderimg.length == 0
-                        ? 1
-                        : _productProvider.carouselSliderimg.length,
-                    position: _dotPosition,
-                    decorator: DotsDecorator(
-                        activeColor: Colors.greenAccent,
-                        color: Colors.greenAccent.withOpacity(0.5),
-                        spacing: EdgeInsets.all(2),
-                        activeSize: Size(8.w, 8.h),
-                        size: Size(6.w, 6.h)),
-                  ),
-                  GridView.count(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 2,
-                    crossAxisSpacing: 2,
-                    childAspectRatio: 0.8,
-                    children: _productProvider.productList
-                        .map((e) => ProductItem(e))
-                        .toList(),
-                  ),
-                ],
+                                    ),
+                                    width: 200.w,
+                                    height: 200.h,
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 10.w),
+                                    child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(20.r),
+                                        child: CachedNetworkImage(
+                                          imageUrl: item,
+                                          fit: BoxFit.cover,
+                                          placeholder: (context, url) =>
+                                              SpinKitFadingCircle(
+                                            color: Colors.greenAccent,
+                                          ),
+                                          errorWidget: (context, url, error) =>
+                                              Icon(Icons.error),
+                                        )),
+                                  ))
+                              .toList(),
+                          options: CarouselOptions(
+                              autoPlay: true,
+                              enlargeCenterPage: true,
+                              viewportFraction: 1,
+                              enlargeStrategy: CenterPageEnlargeStrategy.height,
+                              onPageChanged: (val, carouselPageChangedReason) {
+                                setState(() {
+                                  _dotPosition = val;
+                                });
+                              })),
+                    ),
+                    DotsIndicator(
+                      dotsCount: _productProvider.carouselSliderimg.length == 0
+                          ? 1
+                          : _productProvider.carouselSliderimg.length,
+                      position: _dotPosition,
+                      decorator: DotsDecorator(
+                          activeColor: Colors.greenAccent,
+                          color: Colors.greenAccent.withOpacity(0.5),
+                          spacing: EdgeInsets.all(2),
+                          activeSize: Size(8.w, 8.h),
+                          size: Size(6.w, 6.h)),
+                    ),
+                    GridView.count(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 2,
+                      crossAxisSpacing: 2,
+                      childAspectRatio: 0.8,
+                      children: _productProvider.productList
+                          .map((e) => ProductItem(e))
+                          .toList(),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

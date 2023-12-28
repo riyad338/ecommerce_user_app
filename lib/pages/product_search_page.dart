@@ -1,6 +1,7 @@
 import 'package:ecommerce_own_user_app/models/product_model.dart';
 import 'package:ecommerce_own_user_app/pages/product_details_page.dart';
 import 'package:ecommerce_own_user_app/providers/product_provider.dart';
+import 'package:ecommerce_own_user_app/providers/theme_provider.dart';
 import 'package:ecommerce_own_user_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,8 +19,11 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: themeProvider.themeModeType == ThemeModeType.Dark
+          ? Colors.grey.shade800
+          : Colors.white,
       appBar: AppBar(
         leadingWidth: 40.w,
         leading: Builder(
@@ -29,10 +33,14 @@ class _SearchPageState extends State<SearchPage> {
               },
               icon: Icon(
                 Icons.arrow_back,
-                color: Colors.black,
+                color: themeProvider.themeModeType == ThemeModeType.Dark
+                    ? Colors.white
+                    : Colors.black,
               )),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: themeProvider.themeModeType == ThemeModeType.Dark
+            ? Colors.grey.shade800
+            : Colors.white,
         elevation: 0,
         title: TextField(
           autofocus: true,
@@ -42,7 +50,9 @@ class _SearchPageState extends State<SearchPage> {
             });
           },
           decoration: InputDecoration(
-            fillColor: Colors.grey.shade200,
+            fillColor: themeProvider.themeModeType == ThemeModeType.Dark
+                ? Colors.black
+                : Colors.white,
             filled: true,
             enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(15.r),
@@ -53,7 +63,9 @@ class _SearchPageState extends State<SearchPage> {
                 borderSide: BorderSide(color: Colors.greenAccent)),
             suffixIcon: Icon(
               Icons.search,
-              color: Colors.black,
+              color: themeProvider.themeModeType == ThemeModeType.Dark
+                  ? Colors.white
+                  : Colors.black,
             ),
             hintText: 'Search Products',
           ),
@@ -80,6 +92,7 @@ class _SearchPageState extends State<SearchPage> {
                   padding: EdgeInsets.symmetric(horizontal: 10.0),
                   child: Card(
                     child: ListTile(
+                      tileColor: Colors.grey,
                       leading: CircleAvatar(
                         backgroundImage: NetworkImage(
                             "${provider.productList[index].imageDownloadUrl}"),

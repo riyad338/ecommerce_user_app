@@ -1,10 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce_own_user_app/pages/product_list_page.dart';
 import 'package:ecommerce_own_user_app/pages/sslcommerz_page.dart';
+import 'package:ecommerce_own_user_app/providers/theme_provider.dart';
 import 'package:ecommerce_own_user_app/providers/user_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 import '../auth/auth_service.dart';
@@ -82,6 +85,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.greenAccent,
@@ -109,6 +113,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: _cartProvider.cartList
                         .map((cartModel) => ListTile(
+                              leading: CachedNetworkImage(
+                                imageUrl: "${cartModel.imageDownloadUrl}",
+                                height: 50,
+                                width: 50,
+                                placeholder: (context, url) =>
+                                    SpinKitFadingCircle(
+                                  color: Colors.greenAccent,
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
+                              ),
                               title: Text(cartModel.productName),
                               trailing:
                                   Text('${cartModel.qty}x${cartModel.price}'),
@@ -121,7 +136,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   ),
                   Divider(
                     height: 1.h,
-                    color: Colors.black,
+                    color: themeProvider.themeModeType == ThemeModeType.Dark
+                        ? Colors.white
+                        : Colors.black,
                   ),
                   Column(
                     children: [
@@ -132,9 +149,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           Text(
                             '$takaSymbol${_cartProvider.cartItemsTotalPrice}',
                             style: TextStyle(
-                                fontSize: 20.sp,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.bold,
+                              color: themeProvider.themeModeType ==
+                                      ThemeModeType.Dark
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
                           )
                         ],
                       ),
@@ -145,9 +166,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           Text(
                             '$takaSymbol${_orderProvider.orderConstantsModel.deliveryCharge}',
                             style: TextStyle(
-                                fontSize: 20.sp,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.bold,
+                              color: themeProvider.themeModeType ==
+                                      ThemeModeType.Dark
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
                           )
                         ],
                       ),
@@ -159,9 +184,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           Text(
                             '-$takaSymbol${_orderProvider.getDiscountAmount(_cartProvider.cartItemsTotalPrice)}',
                             style: TextStyle(
-                                fontSize: 20.sp,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.bold,
+                              color: themeProvider.themeModeType ==
+                                      ThemeModeType.Dark
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
                           )
                         ],
                       ),
@@ -173,15 +202,21 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           Text(
                             '$takaSymbol${_orderProvider.getTotalVatAmount(_cartProvider.cartItemsTotalPrice)}',
                             style: TextStyle(
-                                fontSize: 20.sp,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.bold,
+                              color: themeProvider.themeModeType ==
+                                      ThemeModeType.Dark
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
                           )
                         ],
                       ),
                       Divider(
                         height: 1.h,
-                        color: Colors.black,
+                        color: themeProvider.themeModeType == ThemeModeType.Dark
+                            ? Colors.white
+                            : Colors.black,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -194,9 +229,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           Text(
                             '$takaSymbol${_orderProvider.getGrandTotal(_cartProvider.cartItemsTotalPrice)}',
                             style: TextStyle(
-                                fontSize: 20.sp,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.bold,
+                              color: themeProvider.themeModeType ==
+                                      ThemeModeType.Dark
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
                           )
                         ],
                       ),
@@ -410,8 +449,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        final themeProvider = Provider.of<ThemeProvider>(context);
         return AlertDialog(
-          backgroundColor: Colors.white,
+          backgroundColor: themeProvider.themeModeType == ThemeModeType.Dark
+              ? Colors.black87
+              : Colors.white,
           elevation: 20,
           title: Text("Confirm!"),
           content: Text("Are you Confirm your Order?"),
@@ -423,6 +465,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
               },
             ),
             ElevatedButton(
+              style:
+                  ElevatedButton.styleFrom(backgroundColor: Colors.greenAccent),
               child: Text("Yes"),
               onPressed: () async {
                 if (FirebaseAuth.instance.currentUser != null) {

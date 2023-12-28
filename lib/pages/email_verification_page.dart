@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:ecommerce_own_user_app/auth/auth_service.dart';
 import 'package:ecommerce_own_user_app/pages/product_list_page.dart';
+import 'package:ecommerce_own_user_app/utils/helper_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -36,10 +37,11 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
 
     if (isEmailVerified) {
       Navigator.pushReplacementNamed(context, ProductListPage.routeName);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Email Successfully Verified")));
-
+      showMsg(context, "Email Successfully Verified");
       timer?.cancel();
+    } else {
+      await FirebaseAuth.instance.signOut();
+      return null;
     }
   }
 

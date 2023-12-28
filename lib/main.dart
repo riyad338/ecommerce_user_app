@@ -21,6 +21,7 @@ import 'package:ecommerce_own_user_app/pages/user_profile_update.dart';
 import 'package:ecommerce_own_user_app/providers/cart_provider.dart';
 import 'package:ecommerce_own_user_app/providers/order_provider.dart';
 import 'package:ecommerce_own_user_app/providers/product_provider.dart';
+import 'package:ecommerce_own_user_app/providers/theme_provider.dart';
 import 'package:ecommerce_own_user_app/providers/user_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -37,6 +38,7 @@ void main() async {
     ChangeNotifierProvider(create: (context) => CartProvider()),
     ChangeNotifierProvider(create: (context) => OrderProvider()),
     ChangeNotifierProvider(create: (context) => UserProvider()),
+    ChangeNotifierProvider(create: (context) => ThemeProvider()),
   ], child: const MyApp()));
 }
 
@@ -51,43 +53,51 @@ class MyApp extends StatelessWidget {
         minTextAdapt: true,
         splitScreenMode: true,
         builder: (context, child) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'Flutter Demo',
-            theme: ThemeData(
-              textTheme: GoogleFonts.robotoTextTheme(),
-              primarySwatch: Colors.blue,
+          return ChangeNotifierProvider<ThemeProvider>(
+            create: (_) => ThemeProvider(),
+            child: Consumer<ThemeProvider>(
+              builder: (context, themeProvider, _) {
+                return MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  title: 'Flutter Demo',
+                  theme: Provider.of<ThemeProvider>(context).themeData,
+                  home: LauncherPage(),
+                  routes: {
+                    LauncherPage.routeName: (context) => LauncherPage(),
+                    LoginPage.routeName: (context) => LoginPage(),
+                    ProductListPage.routeName: (context) => ProductListPage(),
+                    ProductDetailsPage.routeName: (context) =>
+                        ProductDetailsPage(),
+                    UserProfilePage.routeName: (context) => UserProfilePage(),
+                    CartPage.routeName: (context) => CartPage(),
+                    CheckoutPage.routeName: (context) => CheckoutPage(),
+                    OrderSuccessfulPage.routeName: (context) =>
+                        OrderSuccessfulPage(),
+                    UserOrderListPage.routeName: (context) =>
+                        UserOrderListPage(),
+                    OrderDetailsPage.routeName: (context) => OrderDetailsPage(),
+                    UserProfileUpdatePage.routeName: (context) =>
+                        UserProfileUpdatePage(),
+                    SearchPage.routeName: (context) => SearchPage(),
+                    EmailVerificationScreen.routeName: (context) =>
+                        EmailVerificationScreen(),
+                    DistributorProductListPage.routeName: (context) =>
+                        DistributorProductListPage(),
+                    DistributorCartPage.routeName: (context) =>
+                        DistributorCartPage(),
+                    DistributorOrderDetailsPage.routeName: (context) =>
+                        DistributorOrderDetailsPage(),
+                    DistributorOrderListPage.routeName: (context) =>
+                        DistributorOrderListPage(),
+                    DistributorSearchPage.routeName: (context) =>
+                        DistributorSearchPage(),
+                    DistributorProductDetailsPage.routeName: (context) =>
+                        DistributorProductDetailsPage(),
+                    SSLCommerzPage.routeName: (context) => SSLCommerzPage(),
+                  },
+                );
+              },
             ),
-            home: LauncherPage(),
-            routes: {
-              LauncherPage.routeName: (context) => LauncherPage(),
-              LoginPage.routeName: (context) => LoginPage(),
-              ProductListPage.routeName: (context) => ProductListPage(),
-              ProductDetailsPage.routeName: (context) => ProductDetailsPage(),
-              UserProfilePage.routeName: (context) => UserProfilePage(),
-              CartPage.routeName: (context) => CartPage(),
-              CheckoutPage.routeName: (context) => CheckoutPage(),
-              OrderSuccessfulPage.routeName: (context) => OrderSuccessfulPage(),
-              UserOrderListPage.routeName: (context) => UserOrderListPage(),
-              OrderDetailsPage.routeName: (context) => OrderDetailsPage(),
-              UserProfileUpdatePage.routeName: (context) =>
-                  UserProfileUpdatePage(),
-              SearchPage.routeName: (context) => SearchPage(),
-              EmailVerificationScreen.routeName: (context) =>
-                  EmailVerificationScreen(),
-              DistributorProductListPage.routeName: (context) =>
-                  DistributorProductListPage(),
-              DistributorCartPage.routeName: (context) => DistributorCartPage(),
-              DistributorOrderDetailsPage.routeName: (context) =>
-                  DistributorOrderDetailsPage(),
-              DistributorOrderListPage.routeName: (context) =>
-                  DistributorOrderListPage(),
-              DistributorSearchPage.routeName: (context) =>
-                  DistributorSearchPage(),
-              DistributorProductDetailsPage.routeName: (context) =>
-                  DistributorProductDetailsPage(),
-              SSLCommerzPage.routeName: (context) => SSLCommerzPage(),
-            },
           );
         });
   }

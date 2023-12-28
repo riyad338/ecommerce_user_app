@@ -55,6 +55,11 @@ dependencies:
   flutter_spinkit:
   fluttertoast:
   dots_indicator:
+  otp_text_field:
+  flutter_secure_storage:
+  shared_preferences:
+  google_sign_in:
+  modal_progress_hud_nsn:
 dev_dependencies:
   flutter_test:
     sdk: flutter

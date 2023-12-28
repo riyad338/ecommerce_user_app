@@ -1,9 +1,11 @@
 import 'package:ecommerce_own_user_app/pages/user_profile_page.dart';
 import 'package:ecommerce_own_user_app/pages/user_profile_update.dart';
+import 'package:ecommerce_own_user_app/providers/theme_provider.dart';
 import 'package:ecommerce_own_user_app/utils/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce_own_user_app/providers/user_provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 import '../auth/auth_service.dart';
@@ -18,6 +20,7 @@ class MainDrawer extends StatefulWidget {
 
 class _MainDrawerState extends State<MainDrawer> {
   late UserProvider _userProvider;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
   String? userImage;
   String? userName;
   String? userEmail;
@@ -44,6 +47,7 @@ class _MainDrawerState extends State<MainDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Drawer(
       child: Column(children: [
         Container(
@@ -96,15 +100,34 @@ class _MainDrawerState extends State<MainDrawer> {
           title: Text('My Orders'),
         ),
         ListTile(
+          onTap: () async {
+            setState(() {
+              themeProvider.toggleTheme();
+            });
+          },
+          trailing: Switch(
+            value: themeProvider.themeModeType == ThemeModeType.Dark,
+            onChanged: (value) {
+              setState(() {
+                themeProvider.toggleTheme();
+              });
+            },
+          ),
+          leading: Icon(Icons.dark_mode),
+          title: Text('Dark Mood'),
+        ),
+        ListTile(
           onTap: () {},
           leading: Icon(Icons.share),
           title: Text('Share'),
         ),
         ListTile(
-          onTap: () {
-            AuthService.logout().then((_) =>
-                Navigator.pushReplacementNamed(context, LoginPage.routeName));
+          onTap: () async {
             showToastMsg("Logout Successfully");
+            await _googleSignIn.signOut().then((_) =>
+                Navigator.pushReplacementNamed(context, LoginPage.routeName));
+            await AuthService.logout().then((_) =>
+                Navigator.pushReplacementNamed(context, LoginPage.routeName));
           },
           leading: Icon(Icons.logout),
           title: Text('Logout'),
